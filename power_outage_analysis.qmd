@@ -105,6 +105,7 @@ if(st_crs(houston_pre_storm) == st_crs(houston_post_storm)){
 # Reclassify Difference between Pre-and-Post Storm and Crop to Blackout 
 ```{r}
 #| code-overflow: wrap
+#| warning: False
 # Calculate light intensity difference pre and post storm
 houston_diff <- rast(houston_pre_storm) - rast(houston_post_storm)
 
@@ -135,6 +136,7 @@ blackout_houston <- st_crop(blackout_vector, houston_bbox) |>
 # Compare Night Light Intensities for Pre-and-Post Storms
 ```{r}
 #| code-overflow: wrap
+#| warning: False
 # Crop pre-and-post storm to Houston bounding box
 pre_crop <- st_crop(houston_pre_storm, houston_bbox) 
 post_crop <- st_crop(houston_post_storm, houston_bbox) 
@@ -163,6 +165,7 @@ These two maps highlight the overall difference in the city night light radiance
 # Remove Highway Buffer from Blackout Map
 ```{r}
 #| code-overflow: wrap
+#| warning: False
 # Reproject highways and create 200m buffer
 highways <- st_transform(highways, crs = 'EPSG:3083')
 highway_buffer <- highways |> # Highways experienced changes in their night 
@@ -203,4 +206,4 @@ tm_basemap("OpenStreetMap.HOT") +
 ```
 
 # Results Summary
-The map highlights areas of Houston that experienced power outages during the storm in 2021. Highway buffers of 200 meters were removed because outages near major roadways were not representative of residential power outages. The blackout raster was then filtered to identify areas where homes experienced a loss of power. Results show that outages were primarily concentrated in the northwestern region of Houston. While this analysis identifies the spatial distribution of power outages, it does not examine the environmental justice implications of these disruptions. Future analysis should investigate whether the frequency and duration of outages differed across neighborhoods and whether vulnerable communities experienced disproportionate impacts.
+The map highlights areas of Houston that experienced power outages during the storm in 2021. Highway buffers of 200 meters were removed because outages near major roadways were not representative of residential power outages. The blackout raster was then filtered to identify areas where homes experienced a loss of power. While this analysis identifies the spatial distribution of power outages, it does not examine the environmental justice implications of these disruptions. Future analysis should investigate whether the frequency and duration of outages differed across neighborhoods and whether vulnerable communities experienced disproportionate impacts. The analysis only included data from February 7 and February 16, so additional homes may have been affected outside of these dates. Furthermore, the blackout threshold was set at 200 nW/cm²/sr of radiance. Changes to either the radiance threshold or the dates included in the analysis could alter the results and spatial patterns shown in the maps.
