@@ -141,14 +141,14 @@ blackout_houston <- st_crop(blackout_vector, houston_bbox) |>
 pre_crop <- st_crop(houston_pre_storm, houston_bbox) 
 post_crop <- st_crop(houston_post_storm, houston_bbox) 
 
-# Plot of light intensity before and after storms 
+# Combine light intensity before and after storms in same variable
 light_merge <- c(pre_crop, post_crop)
 names(light_merge) <- c("2-07-2021", "2-16-2021")
 
 # Maps comparing night light intensities
 tm_shape(light_merge) + 
   tm_raster(
-    col.scale = tm_scale_continuous_log1p(values = "magma"),
+    col.scale = tm_scale_continuous_log1p(values = "magma"), # continuous scale function
     col.legend = tm_legend(
       title = "Night light radiance (nW/cm²/sr)",
       orientation = "landscape"
