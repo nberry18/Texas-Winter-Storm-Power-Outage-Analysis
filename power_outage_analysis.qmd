@@ -151,12 +151,15 @@ tm_shape(light_merge) +
     col.scale = tm_scale_continuous_log1p(values = "magma"), # continuous scale function
     col.legend = tm_legend(
       title = "Night light radiance (nW/cm²/sr)",
-      orientation = "landscape"
-    ) , col.free = FALSE
+      orientation = "landscape",
+      position = tm_pos_out("center", "bottom")
+    ) , 
+    col.free = FALSE 
   ) + 
-  tm_facets_wrap(nrow = 1) +
+  tm_facets_wrap(nrow = 1) + # maps side by side
   tm_title("Houston, TX Light Intensity Pre-and-Post February 2021 Storms") +
-  tm_compass(position = c("left", "bottom"), size = 0.5) +
+  tm_compass(position = c("left", "bottom"), size = 0.5,
+            color.dark = "white", text.color = "white") + # make compass white
   tm_scalebar(position = tm_pos_out("center", "bottom"))
 ```
 
