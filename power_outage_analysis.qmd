@@ -69,7 +69,6 @@ if(all(st_bbox(feb_7_h6) == st_bbox(feb_16_h6))){
 } else{
   warning("extents do not match")
 }
-
 ```
 
 # Merge Stars Data with St_Mosaic
@@ -79,14 +78,16 @@ houston_pre_storm <- st_mosaic(feb_7_h5, feb_7_h6)
 houston_post_storm <- st_mosaic(feb_16_h5, feb_16_h6)
 ```
 
+# Check after merge that all match
 ```{r}
-
+# Double check extents match after merge
 if(all(st_bbox(houston_pre_storm) == st_bbox(houston_post_storm))){
   print("extents match")
 } else{
   warning("extents do not match")
 }
 
+# Double check CRS match after merge
 if(st_crs(houston_pre_storm) == st_crs(houston_post_storm)){
   print("CRS match")
 } else{
@@ -94,14 +95,12 @@ if(st_crs(houston_pre_storm) == st_crs(houston_post_storm)){
 }
 ```
 
-
+# Reclassify Difference between Pre-and-Post Storm and Crop to Blackout 
 ```{r}
-# reclassify the difference raster, assuming that any location that experienced a drop of more than 200 nW cm-2sr-1 experienced a blackout
+# Calculate light intensity difference pre and post storm
+houston_diff <- rast(houston_pre_storm) - rast(houston_spost_torm)
 
-# Calculate light intensity difference
-houston_diff <- rast(houston_pre_storm) - rast(houston_storm)
-
-# assign NA to all locations that experienced a drop of less than 200 nW cm-2sr-1 change
+# Assign NA to all locations that experienced a drop of less than 200 nW cm-2sr-1 change
 blackout_mask <- classify(houston_diff, matrix(
     c(-Inf, 200, NA, # No blackout
       200, Inf, 1   # Blackout
@@ -109,35 +108,32 @@ blackout_mask <- classify(houston_diff, matrix(
     ncol = 3,
     byrow = TRUE))
 
-# vectorize the blackout mask (hint: use st_as_sf() to convert from a raster to a vector and fix any invalid geometries with st_make_valid())
-
-# Convert raster to vector polygons
+# Vectorize the blackout mask 
 blackout_vector <- st_as_stars(blackout_mask) |> 
-  st_as_sf() |> 
-  st_make_valid() 
+  st_as_sf() |> # convert from a raster to a vector
+  st_make_valid() # fix any invalid geometries 
 
-# crop (spatially subset) the blackout mask to the Houston area as defined by the following coordinates:
-# (-96.5, 29), (-96.5, 30.5), (-94.5, 30.5), (-94.5, 29)
 # Define Houston bounding box
 houston_bbox <- st_bbox(c(xmin = -96.5, ymin = 29,
                           xmax = -94.5, ymax = 30.5),
                           crs = st_crs(feb_7_h5))
 
-# re-project the cropped blackout dataset to EPSG:3083 (NAD83 / Texas Centric Albers Equal Area)
-# Crop to Houston and reproject
+# Crop to Houston bounding box and reproject to EPSG:3083
 blackout_houston <- st_crop(blackout_vector, houston_bbox) |> 
   st_transform(crs = 'EPSG:3083')
-
 ```
 
+# Compare Night Light Intensities for Pre-and-Post Storms
 ```{r}
+# Crop pre-and-post storm to Houston bounding box
 pre_crop <- st_crop(houston_pre_storm, houston_bbox) 
-post_crop <- st_crop(houston_storm, houston_bbox) 
+post_crop <- st_crop(houston_post_storm, houston_bbox) 
 
 # Plot of light intensity before and after storms 
 light_merge <- c(pre_crop, storm_crop)
 names(light_merge) <- c("2-07-2021", "2-16-2021")
 
+# Maps comparing night light intensities
 tm_shape(light_merge) + 
   tm_raster(
     col.scale = tm_scale_continuous_log1p(values = "magma"),
@@ -147,40 +143,48 @@ tm_shape(light_merge) +
     ) , col.free = FALSE
   ) + 
   tm_facets_wrap(nrow = 1) +
-  tm_title("Houston, TX Light Intensity Before and After February 2021 Storms") +
-  tm_compass(position = c("right", "bottom"), size = 0.5) +
+  tm_title("Houston, TX Light Intensity Pre-and-Post February 2021 Storms") +
+  tm_compass(position = c("left", "bottom"), size = 0.5) +
   tm_scalebar(position = tm_pos_out("center", "bottom"))
 ```
 
+These two maps highlight the overall difference in the city night light radiance (nW/cm²/sr) for pre-and-post storms. This shows that overall radiance descreased after the storm since the second map is more sparse.
 
+# Remove Highway Buffer from Blackout Map
 ```{r}
 # Reproject highways and create 200m buffer
 highways <- st_transform(highways, crs = 'EPSG:3083')
-highway_buffer <- highways |> 
-  st_union() |> 
+highway_buffer <- highways |> # Highways experienced changes in their night light intensities unrelated to the storm
+  st_union() |> # st_union() to combine geometries within each group
   st_buffer(dist = 200)
 
-# Remove highway buffers from blackout areas
+# Take away highway buffers from blackout areas
 blackout_final <- st_difference(blackout_houston, highway_buffer)
 ```
 
-
+# Number of Homes That Experienced Power Outages
 ```{r}
 # Filter the houses that relate to blackout area
 blackout_houses <- st_transform(houses, crs = "EPSG:3083") |> 
-  st_filter(blackout_final)
+  st_filter(blackout_final) # identify homes that overlap with areas that experienced blackouts
 
 # Houses affected by blackout
 n_blackout_houses <- nrow(blackout_houses) # 157409 houses
 ```
 
+Based on this analysis, 157,409 homes experiences a power outage from the February 2021 storms.
 
+# Map of Houston Homes That Experienced Power Outages in 2021 Storms
 ```{r}
+# Final map output of the homes with power outages
 tm_basemap("OpenStreetMap.HOT") + 
   tm_shape(blackout_houses) + # Homes where power was lost
-  tm_polygons(size = 0.05, fill = "red", fill_alpha = 0.5) +
+  tm_polygons(size = 0.05, fill_alpha = 0.5) +
   tm_add_legend(labels = 'Blackout Areas', position = c("bottom", "right")) +
   tm_scalebar(position = c("bottom", "left")) + # Add scalebar and compass
   tm_compass(position = c("top", "right")) +
   tm_title("Houston Homes That Experienced Power Outages")
 ```
+
+# Results Summary
+The map highlights areas of Houston that experienced power outages during the storm in 2021. Highway buffers of 200 meters were removed because outages near major roadways were not representative of residential power outages. The blackout raster was then filtered to identify areas where homes experienced a loss of power. Results show that outages were primarily concentrated in the northwestern region of Houston. While this analysis identifies the spatial distribution of power outages, it does not examine the environmental justice implications of these disruptions. Future analysis should investigate whether the frequency and duration of outages differed across neighborhoods and whether vulnerable communities experienced disproportionate impacts.
