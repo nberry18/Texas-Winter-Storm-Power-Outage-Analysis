@@ -25,17 +25,17 @@ Texas-Winter-Storm-Power-Outage-Analysis
 ```
 
 ## Data Access
-The SST data was originally generated from NOAA’s 5km Daily Global Satellite Sea Surface Temperature Anomaly v3.1. The datasets used in this analysis was obtained from a downloadable data folder provided through the Environmental Data Science 223 course at the University of California of Santa Barbara website by Annie Adams: https://eds-223-geospatial.github.io/assignments/HW3.html. 
+The NASA VIIRS data (night lights) uses the NASA’s Worldview to explore the data around the day of the storm. This data included 2021-02-07 and 2021-02-16 since it provides two clear, contrasting images to visualize the extent of the power outage in Texas. The datasets used in this analysis was obtained from a downloadable data folder provided through the Environmental Data Science 223 course at the University of California of Santa Barbara website by Annie Adams: https://eds-223-geospatial.github.io/assignments/HW4.html. 
 
-Bathymetry dataset characterizes the depth of the ocean from the General Bathymetric Chart of the Oceans (GEBCO). This dataset was obtained from a downloadable data folder provided through the Environmental Data Science 223 course at the University of California of Santa Barbara website by Annie Adams: https://eds-223-geospatial.github.io/assignments/HW3.html. 
-
-The Exclusive Economic Zones dataset is spatial dataset used to define the maritime boundaries using Exclusive Economic Zones off of the west coast of US from Marineregions.org. The Crashes data comes from the Statewide Integrated Traffice Records System (SWITRS) database collects and processes data gathered from a collision scenes. This dataset used in this analysis was obtained from a downloadable data folder provided through the Environmental Data Science 223 course at the University of California of Santa Barbara website by Annie Adams: https://eds-223-geospatial.github.io/assignments/HW3.html. 
+The Open Street Map dataset is shapefile of all highways in Texas in a prepared Geopackage (.gpkg file) containing just the subset of roads that intersect the Houston metropolitan area. The buildings Geopackage (.gpkg file) dataset was also collected and published through OSM. This dataset was obtained from a downloadable data folder provided through the Environmental Data Science 223 course at the University of California of Santa Barbara website by Annie Adams: https://eds-223-geospatial.github.io/assignments/HW3.html. 
 
 ## Author
 Nina Berry: https://github.com/nberry18 
 
 ## References
-- Average annual sea surface temperature (SST) from the years 2008 to 2012: average annual dataset: https://coralreefwatch.noaa.gov/product/5km/index_5km_ssta.php
-- Ocean depth dataset: https://www.gebco.net/data_and_products/gridded_bathymetry_data/#area
-- Exclusive Econonic Zones dataset: https://www.marineregions.org/eez.php
+- The data can be accessed at: https://drive.google.com/file/d/1bTk62xwOzBqWmmT791SbYbHxnCdjmBtw/view
+- The data must be downloaded and unzipped to be used.
+- The nighttime lights is sourced from NASA’s Worldview VIIRS data. VIIRS data is distributed by NASA’s Level-1 and Atmospheric Archive & Distribution System Distributed Active Archive Center (LAADS DAAC). That data can be accessed here: https://ladsweb.modaps.eosdis.nasa.gov/
+- The roads and highways data is sourced from OpenStreetMap (OSM) and can be accessed here: https://planet.openstreetmap.org/
+- The buildings and houses data is sourced from OpenStreetMap (OSM) and can be accessed here: https://planet.openstreetmap.org/
 - 223 Homework 3 assignment description: https://eds-223-geospatial.github.io/assignments/HW3.html
