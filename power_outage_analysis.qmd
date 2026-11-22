@@ -98,7 +98,7 @@ if(st_crs(houston_pre_storm) == st_crs(houston_post_storm)){
 # Reclassify Difference between Pre-and-Post Storm and Crop to Blackout 
 ```{r}
 # Calculate light intensity difference pre and post storm
-houston_diff <- rast(houston_pre_storm) - rast(houston_spost_torm)
+houston_diff <- rast(houston_pre_storm) - rast(houston_post_storm)
 
 # Assign NA to all locations that experienced a drop of less than 200 nW cm-2sr-1 change
 blackout_mask <- classify(houston_diff, matrix(
@@ -130,7 +130,7 @@ pre_crop <- st_crop(houston_pre_storm, houston_bbox)
 post_crop <- st_crop(houston_post_storm, houston_bbox) 
 
 # Plot of light intensity before and after storms 
-light_merge <- c(pre_crop, storm_crop)
+light_merge <- c(pre_crop, post_crop)
 names(light_merge) <- c("2-07-2021", "2-16-2021")
 
 # Maps comparing night light intensities
